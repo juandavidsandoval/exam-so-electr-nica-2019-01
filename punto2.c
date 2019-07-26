@@ -1,16 +1,17 @@
 
 #include <stdio.h>
-
+#include <unistd.h>
+#include <sys/wait.h>
 #include <stdlib.h>
 #include "common.h"
 #include "common_threads.h"
 
 
-float x = 1250;
-float y = 350;
-float z = 25;
+
+
+
 float v = 0 ;
-float resultado = 0;
+
 
 
 
@@ -29,17 +30,20 @@ void *destruir_puerta (){
 	pthread_mutex_destroy(&puerta);
 }
 
-void *worker23() {
+void *worker23(void *arg) {
     cerrar_puerta();
+    float y=350;
+    float z=25;
     v = z/y;
     abrir_puerta();
     return 0;
 }
 
-void *worker1() {
+void *worker1(void *arg) {
      cerrar_puerta();
-     float v;
-     resultado = x * v;
+     float x=1250;
+     sleep(2);
+     v = x * v;
 
      abrir_puerta();   
      return(0);
@@ -53,13 +57,13 @@ int main(int argc, char *argv[]) {
     pthread_t p1, p2;
     crear_puerta();
     
-    Pthread_create(&p1, NULL, worker1, NULL);
-    Pthread_create(&p2, NULL, worker23, NULL);
+    Pthread_create(&p1, NULL, worker23, NULL);
+    Pthread_create(&p2, NULL, worker1, NULL);
     Pthread_join(p1, NULL);
     Pthread_join(p2, NULL);
-    printf ("RESULTADO DE OPERACIÓN : %f\n", resultado);
+    printf ("RESULTADO DE OPERACIÓN : %f\n", v);
 
-    printf ("Resultado de V: %f\n", v);
+    
     return 0;
 
     destruir_puerta();
